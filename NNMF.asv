@@ -1,0 +1,31 @@
+function [precision, recall] = NNMF(queryNumber)
+%NNMF Calc
+%   Detailed explanation goes here
+
+load 'text-mining-medline_stemmed.mat' A q
+
+k = 50;
+
+[W,H] = nnmf(A,k);
+[Q,R] = qr(W,0);
+
+Rinv = inv(R);
+
+cosines = zeros(size(q, 2), size(H, 2));
+
+for queryNum = 1:size(q,2)
+    qHat = Rinv * Q' * q(:,queryNum);
+    
+    for j = 1: size(H, 2)
+        den = normest(qHat) * normest(H(:,j));
+        cosines(queryNum, j) = qHat' * H(:,j) / den;
+    end
+end
+
+[precision, recall] = getPrecisionRecall(cosines(queryNumber,:), queryNumber);
+
+precision = precision * 100;
+recall = recall * 100;
+
+end
+

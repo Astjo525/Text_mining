@@ -1,20 +1,28 @@
-clear
-load('text-mining-medline_stemmed.mat');
-load('text-mining-medline.tar/MED.REL');
-correctRelDocs = sparse(MED(:,1), MED(:,3), 1) == 1; % hehe
+function [precision, recall] = Clustering(queryNumber)
+% Clustering Clustering is done with the k-means method
+%   queryNumber is the number of the query to compare
+%   precision and recall is returned in percent (0-100)
+
+load 'text-mining-medline_stemmed.mat' A q
 
 k = 50;
 
-% A = normc(A);
+A = normc(A);
 
 [~, Ck] = kmeans(A', k);
 Ck = Ck';
 
-[Pk, R] = qr(Ck, 0);
+[Pk, ~] = qr(Ck, 0);
 
 Gk = Pk' * A;
 
 qk = Pk' * q;
+
+% Matilda's method
+% TODO: delete, probably
+% for n = 1:length(Gk)
+%     cosines_matilda(:,n) = (qk'*Gk(:,n)) / (normest(qk,2) * normest(Gk(:,n),2));
+% end
 
 cosines = zeros(size(q, 2), size(Gk, 2));
 for queryNum = 1:size(q,2)
@@ -24,54 +32,21 @@ for queryNum = 1:size(q,2)
     end
 end
 
-%%
-queryNum = 9;
+[precision, recall] = getPrecisionRecall(cosines(queryNumber,:), queryNumber);
 
-tols = linspace(0,0.98, 100);
-precision = zeros(length(tols), 1);
-recall = zeros(length(tols), 1);
-for i = 1:length(tols)
-    modelResult = cosines(queryNum,:) > tols(i);
-    
-    Dr = nnz(modelResult .* correctRelDocs(queryNum,:));
-    Dt = nnz(modelResult);
-    Nr = nnz(correctRelDocs(queryNum,:));
-    
-    precision(i) = Dr / Dt;
-    recall(i) = Dr / Nr;
+% Multiply by a hundred to get the percent
+% precision = precision * 100;
+% recall = recall * 100;
+
+% TODO: Delete, probably
+%[precision_m, recall_m] = getPrecisionRecall(cosines_matilda(queryNumber,:), queryNumber);
+% precision_m = precision_m * 100;
+% recall_m = recall_m * 100;
+
+% plot(recall, precision, 'b-o')
+% hold on
+% plot(recall_m, precision_m, 'r-*')
+% legend('Algot', 'Matilda')
+
 end
-
-plot(recall * 100, precision * 100, '-o');
-
-
-%%
-% query_number = 9;
-% 
-% ind = MED(:, 1) == query_number;
-% relevant_docs = MED(ind, 3);
-% 
-% tol = linspace(0,1, 100);
-% precision = zeros(length(tol),1);
-% recall = zeros(length(tol),1);
-% 
-% for n = 1:length(tol)
-%     retrieved_docs_sparse = (cosines(query_number, :) > tol(n));
-%     [~, retrieved_docs, ~] = find(retrieved_docs_sparse);
-%     retrieved_docs = retrieved_docs';
-% 
-%     retrieved_relevant_docs = sum(ismember(retrieved_docs, relevant_docs));
-%     precision(n) = retrieved_relevant_docs / length(retrieved_docs);
-% 
-%     recall(n) = retrieved_relevant_docs / length(relevant_docs);
-% end
-% 
-% %figure
-% plot(recall(:)*100, precision(:)*100, '*')
-
-
-%%
-% Precision
-
-% Normalize columns before clustering?
-
 
