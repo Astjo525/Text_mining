@@ -5,7 +5,11 @@ queryNumber = 9;
 
 [precision_cl, recall_cl] = Clustering(queryNumber);
 
+%%% Our own nnmf algorithm
 [precision_nnmf, recall_nnmf] = NNMF(queryNumber);
+
+%%% Matlab's nnmf algorithm
+%[precision_nnmf, recall_nnmf] = NNMFMatlab(queryNumber);
 
 plot(recall_lsi, precision_lsi, 'b-d')
 hold on
