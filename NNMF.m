@@ -5,6 +5,7 @@ function [precision, recall] = NNMF(queryNumber)
 
 load 'text-mining-medline_stemmed.mat' A q
 
+% This is the NNMF algorithm
 k = 50;
 
 % Calculate W
@@ -21,35 +22,23 @@ end
 [Q,R] = qr(W,0);
 H = inv(R)*Q'*A;
 
-% Iteratively improve W and H
+threshold = 100;
+W_norm = threshold +1;
+it = 0;
 epsilon = 1e-10;
-for i = 1:100
+while(threshold < W_norm)
+    prev_W = W;
     W = W.*(W>=0);
     H = H.*(W'*A)./((W'*W)*H+epsilon);
     H = H.*(H>=0);
     W = W.*(A*H')./(W*(H*H')+epsilon);
     W = normalize(W);
     H = normalize(H);
+    W_norm = norm(prev_W - W,'fro');
+    it = it + 1;
 end
 
-%%% ITERATION ACCORDING TO BOOK. IMPROVE THIS INSTEAD OF ABOVE FOR-LOOP %%%
-% threshold = 0.5;
-% diff_H = 1;
-% diff_W = 1;
-% it = 0;
-% while(threshold > diff_H && threshold > diff_W)
-%     old_H = H;
-%     old_W = W;
-%     W = W.*(W>=0);
-%     H = H.*(W'*V)./((W'*W)*H+epsilon);
-%     H = H.*(H>=0);
-%     W = W.*(V*H')./(W*(H*H')+epsilon);
-%     [W,H] = normalize(W,H);
-%     diff_H = sum(sum(abs(old_H - H)));
-%     diff_W = sum(sum(abs(old_W - W)));
-%     it = it + 1;
-% end
-
+% This is the text-mining part
 [Q,R] = qr(W,0);
 
 Rinv = inv(R);
@@ -66,6 +55,7 @@ for queryNum = 1:size(q,2)
 end
 
 [precision, recall] = getPrecisionRecall(cosines(queryNumber,:), queryNumber);
+
 
 end
 
