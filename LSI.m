@@ -5,8 +5,8 @@ function [precision, recall] = LSI(queryNumber)
 
 load text-mining-medline_stemmed.mat A q
 
-[U,Z,V] = svds(A,100);
-H = Z*V';
+[U,S,V] = svds(A,100);
+H = S*V';
 qk = U'*q;
 qk = qk(:,queryNumber);
 cosines = zeros(1, length(H));
