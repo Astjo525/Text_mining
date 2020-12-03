@@ -11,6 +11,7 @@ queryNumber = 9;
 %%% Matlab's nnmf algorithm
 %[precision_nnmf, recall_nnmf] = NNMFMatlab(queryNumber);
 
+figure
 plot(recall_lsi, precision_lsi, 'b-d')
 hold on
 plot(recall_cl, precision_cl, 'k-*')
