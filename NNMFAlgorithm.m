@@ -46,7 +46,7 @@ end
 % Plot change in W to find where it converges
 x_range = 1:length(W_norm_plot);
 figure
-plot(x_range, W_norm_plot);
+%plot(x_range, W_norm_plot);
 
 end
 

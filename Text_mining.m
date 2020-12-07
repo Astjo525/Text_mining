@@ -1,19 +1,15 @@
 clear
-queryNumber = 9;
 
-[precision_lsi, recall_lsi] = LSI(queryNumber);
-
-[precision_cl, recall_cl] = Clustering(queryNumber);
-
-%%% Our own nnmf algorithm
-[precision_nnmf, recall_nnmf] = NNMF(queryNumber);
-
-%%% Matlab's nnmf algorithm
-%[precision_nnmf, recall_nnmf] = NNMFMatlab(queryNumber);
+[precision_lsi, recall_lsi] = LSI();
+[precision_cl, recall_cl] = Clustering();
+[precision_nnmf, recall_nnmf] = NNMF();
 
 figure
-plot(recall_lsi, precision_lsi, 'b-d')
+plot(recall_lsi, precision_lsi, 'r-d')
 hold on
-plot(recall_cl, precision_cl, 'k-*')
-plot(recall_nnmf, precision_nnmf, 'r-^')
+plot(recall_cl, precision_cl, 'b-*')
+plot(recall_nnmf, precision_nnmf, 'y-^')
 legend('LSI', 'Clustering', 'NNMF')
+xlabel('Recall (%)')
+ylabel('Average Precision (%)')
+title('Average')

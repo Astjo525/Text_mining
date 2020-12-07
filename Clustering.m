@@ -1,15 +1,15 @@
-function [precision, recall] = Clustering(queryNumber)
+function [precision, recall] = Clustering()
 % Clustering Clustering is done with the k-means method
 %   queryNumber is the number of the query to compare
 %   precision and recall is returned in percent (0-100)
 
 load 'text-mining-medline_stemmed.mat' A q
 
-k = 50;
+k = 100;
 
 A = normc(A);
 
-[~, Ck] = kmeans(A', k);
+[~, Ck] = kmeans(A', k, 'MaxIter', 2000);
 Ck = Ck';
 
 [Pk, ~] = qr(Ck, 0);
@@ -25,14 +25,27 @@ qk = Pk' * q;
 % end
 
 cosines = zeros(size(q, 2), size(Gk, 2));
+
+steps = 5:5:90;
+vec = zeros(length(steps), size(q,2));
+
 for queryNum = 1:size(q,2)
     for j = 1: size(Gk, 2)
         den = normest(qk(:,queryNum)) * normest(Gk(:,j));
-        cosines(queryNum, j) = qk(:,queryNum)' * Gk(:,j) / den;
+        cosines(:, j) = qk(:,queryNum)' * Gk(:,j) / den;
     end
+    [precision, recall] = getPrecisionRecall(cosines, queryNum);
+    precision(isnan(precision)) = 0;
+    vec(:, queryNum) = interp1q(flip(recall), flip(precision), steps');
 end
 
-[precision, recall] = getPrecisionRecall(cosines(queryNumber,:), queryNumber);
+average_prec = nansum(vec, 2)/sum(~isnan(vec),2);
+
+precision = average_prec;
+recall = steps;
+
+
+%[precision, recall] = getPrecisionRecall(cosines(queryNumber,:), queryNumber);
 
 % Multiply by a hundred to get the percent
 % precision = precision * 100;
