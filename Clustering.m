@@ -39,9 +39,10 @@ for queryNum = 1:size(q,2)
     vec(:, queryNum) = interp1q(flip(recall), flip(precision), steps');
 end
 
-average_prec = nansum(vec, 2)/sum(~isnan(vec),2);
+average = nansum(vec, 2)/sum(~isnan(vec),2);
+average(:,all(average == 0))=[];
 
-precision = average_prec;
+precision = average;
 recall = steps;
 
 

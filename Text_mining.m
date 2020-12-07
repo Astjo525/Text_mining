@@ -5,10 +5,10 @@ clear
 [precision_nnmf, recall_nnmf] = NNMF();
 
 figure
-plot(recall_lsi, precision_lsi, 'r-d')
+plot(recall_lsi, precision_lsi, '-d')
 hold on
-plot(recall_cl, precision_cl, 'b-*')
-plot(recall_nnmf, precision_nnmf, 'y-^')
+plot(recall_cl, precision_cl, '-*')
+plot(recall_nnmf, precision_nnmf, '-^')
 legend('LSI', 'Clustering', 'NNMF')
 xlabel('Recall (%)')
 ylabel('Average Precision (%)')
