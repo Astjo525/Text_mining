@@ -12,4 +12,6 @@ plot(recall_nnmf, precision_nnmf, '-^')
 legend('LSI', 'Clustering', 'NNMF')
 xlabel('Recall (%)')
 ylabel('Average Precision (%)')
+xlim([0 100]);
+ylim([0 100]);
 title('Average')
